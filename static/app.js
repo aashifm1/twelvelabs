@@ -1,5 +1,5 @@
 /* =========================================
-   VoiceForge AI — Application Logic
+   Twelve Labs — Application Logic
    ========================================= */
 
 (function () {
@@ -345,7 +345,7 @@
 
             // Disconnect previous
             if (sourceNode) {
-                try { sourceNode.disconnect(); } catch (e) {}
+                try { sourceNode.disconnect(); } catch (e) { }
             }
 
             analyser = audioContext.createAnalyser();
@@ -441,14 +441,14 @@
 
         // For MP3, we already have the blob
         if (format === "mp3") {
-            triggerDownload(audioBlob, `voiceforge_audio.mp3`);
+            triggerDownload(audioBlob, `twelvelabs_audio.mp3`);
         } else if (format === "wav") {
             // Convert MP3 blob to WAV using AudioContext
             convertToWav(audioBlob).then((wavBlob) => {
-                triggerDownload(wavBlob, `voiceforge_audio.wav`);
+                triggerDownload(wavBlob, `twelvelabs_audio.wav`);
             }).catch(() => {
                 // Fallback: download as mp3 anyway
-                triggerDownload(audioBlob, `voiceforge_audio.mp3`);
+                triggerDownload(audioBlob, `twelvelabs_audio.mp3`);
             });
         }
     }
