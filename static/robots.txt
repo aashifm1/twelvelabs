@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /temp_audio/
+
+Sitemap: https://twelvelabs.onrender.com/sitemap.xml

@@ -38,7 +38,7 @@
     const infoVoice = document.getElementById("infoVoice");
     const infoDuration = document.getElementById("infoDuration");
     const infoSize = document.getElementById("infoSize");
-    const bgParticles = document.getElementById("bgParticles");
+    const themeToggle = document.getElementById("themeToggle");
 
     // --- State ---
     let audio = null;
@@ -55,31 +55,40 @@
     init();
 
     function init() {
-        createParticles();
+        initTheme();
         loadVoices();
         setupEventListeners();
     }
 
-    // --- Background Particles ---
-    function createParticles() {
-        const count = 15;
-        for (let i = 0; i < count; i++) {
-            const particle = document.createElement("div");
-            particle.className = "particle";
-            const size = Math.random() * 1.5 + 0.5;
-            const left = Math.random() * 100;
-            const duration = Math.random() * 20 + 14;
-            const delay = Math.random() * 14;
-            particle.style.cssText = `
-                width: ${size}px;
-                height: ${size}px;
-                left: ${left}%;
-                background: rgba(255, 255, 255, 0.15);
-                box-shadow: 0 0 ${size * 2}px rgba(255, 255, 255, 0.05);
-                animation-duration: ${duration}s;
-                animation-delay: ${delay}s;
-            `;
-            bgParticles.appendChild(particle);
+    // --- Theme (light/dark) ---
+    function initTheme() {
+        let stored = null;
+        try {
+            stored = localStorage.getItem("twelvelabs-theme");
+        } catch (e) {
+            // localStorage unavailable (private mode, etc.) — fall back silently
+        }
+
+        const preferred = stored || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        applyTheme(preferred);
+
+        themeToggle.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+            const next = current === "light" ? "dark" : "light";
+            applyTheme(next);
+            try {
+                localStorage.setItem("twelvelabs-theme", next);
+            } catch (e) {
+                // ignore storage errors
+            }
+        });
+    }
+
+    function applyTheme(theme) {
+        if (theme === "light") {
+            document.documentElement.setAttribute("data-theme", "light");
+        } else {
+            document.documentElement.removeAttribute("data-theme");
         }
     }
 
@@ -204,7 +213,6 @@
             rate: rate,
             pitch: pitch,
             volume: volume,
-            format: "mp3",
         };
 
         // Show loading
@@ -260,19 +268,14 @@
         generateBtn.disabled = loading;
         btnContent.style.display = loading ? "none" : "flex";
         btnLoading.style.display = loading ? "flex" : "none";
-
-        if (loading) {
-            document.getElementById("outputPanel").classList.add("loading");
-        } else {
-            document.getElementById("outputPanel").classList.remove("loading");
-        }
+        document.getElementById("studioCard").classList.toggle("loading", loading);
     }
 
     // --- Show State ---
     function showState(state) {
-        emptyState.style.display = state === "empty" ? "flex" : "none";
+        emptyState.style.display = state === "empty" ? "block" : "none";
         playerSection.style.display = state === "player" ? "block" : "none";
-        errorState.style.display = state === "error" ? "flex" : "none";
+        errorState.style.display = state === "error" ? "block" : "none";
     }
 
     // --- Audio Events ---
@@ -361,9 +364,19 @@
         }
     }
 
+    function getAccentRgb() {
+        const hex = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+        const clean = hex.replace("#", "");
+        const r = parseInt(clean.substring(0, 2), 16);
+        const g = parseInt(clean.substring(2, 4), 16);
+        const b = parseInt(clean.substring(4, 6), 16);
+        return { r, g, b };
+    }
+
     function drawWaveform(ctx, width, height) {
         const bufferLength = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
+        const { r, g, b } = getAccentRgb();
 
         function draw() {
             animationId = requestAnimationFrame(draw);
@@ -381,23 +394,14 @@
                 const barHeight = (value / 255) * (height * 0.8);
                 const x = i * barWidth;
                 const y = (height - barHeight) / 2;
-
-                // Orange-tinted bars
-                const r = 255;
-                const g = Math.floor(60 + (value / 255) * 40);
-                const b = 0;
-                const alpha = 0.25 + (value / 255) * 0.55;
+                const alpha = 0.3 + (value / 255) * 0.55;
 
                 ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                 ctx.beginPath();
                 const cornerRadius = Math.min(barWidth / 2 - gap / 2, 3);
                 roundedRect(ctx, x + gap / 2, y, barWidth - gap, barHeight, cornerRadius);
                 ctx.fill();
-
-                ctx.shadowColor = `rgba(255, 79, 0, 0.08)`;
-                ctx.shadowBlur = 4;
             }
-            ctx.shadowBlur = 0;
         }
 
         draw();
@@ -408,15 +412,15 @@
         const barCount = 64;
         const barWidth = width / barCount;
         const gap = 2;
+        const { r, g, b } = getAccentRgb();
 
         for (let i = 0; i < barCount; i++) {
             const value = Math.sin(i * 0.3) * 0.3 + Math.random() * 0.4 + 0.15;
             const barHeight = value * height * 0.7;
             const x = i * barWidth;
             const y = (height - barHeight) / 2;
-            const darkness = 60 + (i / barCount) * 30;
 
-            ctx.fillStyle = `rgba(255, ${80 + darkness}, 0, 0.15)`;
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
             ctx.beginPath();
             roundedRect(ctx, x + gap / 2, y, barWidth - gap, barHeight, 2);
             ctx.fill();
