@@ -74,24 +74,36 @@
         </header>
 
         <section class="hero">
-            <p class="hero-sub">Free neural text-to-speech. No sign-up, no API key.</p>
+            <p class="hero-kicker">NEURAL VOICE STUDIO</p>
+            <h1 class="hero-title">Turn your words into natural audio.</h1>
         </section>
 
         <main class="studio">
             <div class="studio-card" id="studioCard">
-                <textarea
-                    id="textInput"
-                    class="studio-input"
-                    placeholder="Type or paste the text you want to hear…"
-                    maxlength="5000"
-                    spellcheck="true"
-                ></textarea>
+                <div class="studio-layout">
+                    <section class="input-panel" aria-label="Text input">
+                        <textarea
+                            id="textInput"
+                            class="studio-input"
+                            placeholder="Type or paste the text you want to hear…"
+                            maxlength="5000"
+                            spellcheck="true"
+                        ></textarea>
 
-                <div class="studio-metabar">
-                    <span class="char-counter" id="charCounter">0 / 5,000</span>
-                </div>
+                        <div class="studio-metabar">
+                            <div class="editor-stats" aria-live="polite">
+                                <span id="wordCounter">0 words</span>
+                                <span id="durationEstimate">About 0:00</span>
+                                <span class="char-counter" id="charCounter">0 / 5,000</span>
+                            </div>
+                        </div>
 
-                <div class="studio-toolbar">
+                        <div class="editor-actions">
+                            <button class="text-action" id="sampleBtn" type="button">Use sample text</button>
+                            <button class="text-action text-action-quiet" id="clearBtn" type="button">Clear</button>
+                        </div>
+
+                        <div class="studio-toolbar">
                     <div class="field field-voice">
                         <label for="voiceSelect">Voice</label>
                         <div class="select-wrapper">
@@ -124,11 +136,13 @@
                             Generating
                         </span>
                     </button>
-                </div>
+                        </div>
 
-                <p class="voice-hint" id="voiceInfo"></p>
+                        <p class="voice-hint" id="voiceInfo"></p>
+                    </section>
 
-                <div class="output-area">
+                    <section class="output-panel" aria-label="Audio output">
+                        <div class="output-area">
                     <div class="empty-state" id="emptyState">
                         <p>Your audio will appear here once generated.</p>
                     </div>
@@ -168,9 +182,35 @@
                         <p id="errorMessage">Something went wrong. Please try again.</p>
                         <button class="retry-btn" id="retryBtn">Try again</button>
                     </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>
+
+        <section class="feature-strip" aria-label="Twelve Labs features">
+            <article class="feature-item">
+                <span class="feature-number">01</span>
+                <div>
+                    <h2>Write or paste</h2>
+                    <p>Start with a script, note, article, or idea.</p>
+                </div>
+            </article>
+            <article class="feature-item">
+                <span class="feature-number">02</span>
+                <div>
+                    <h2>Shape the voice</h2>
+                    <p>Adjust speed, pitch, and volume to fit your tone.</p>
+                </div>
+            </article>
+            <article class="feature-item">
+                <span class="feature-number">03</span>
+                <div>
+                    <h2>Listen and download</h2>
+                    <p>Preview your audio, then save it as MP3 or WAV.</p>
+                </div>
+            </article>
+        </section>
 
         <footer class="foot">
             <p>Twelve Labs — neural voice synthesis.</p>

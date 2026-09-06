@@ -8,6 +8,10 @@
     // --- DOM Elements ---
     const textInput = document.getElementById("textInput");
     const charCounter = document.getElementById("charCounter");
+    const wordCounter = document.getElementById("wordCounter");
+    const durationEstimate = document.getElementById("durationEstimate");
+    const sampleBtn = document.getElementById("sampleBtn");
+    const clearBtn = document.getElementById("clearBtn");
     const voiceSelect = document.getElementById("voiceSelect");
     const voiceInfo = document.getElementById("voiceInfo");
     const speedSlider = document.getElementById("speedSlider");
@@ -133,11 +137,19 @@
     function setupEventListeners() {
         // Character counter
         textInput.addEventListener("input", () => {
-            const len = textInput.value.length;
-            charCounter.textContent = `${len.toLocaleString()} / 5,000`;
-            charCounter.className = "char-counter";
-            if (len > 4500) charCounter.classList.add("danger");
-            else if (len > 4000) charCounter.classList.add("warning");
+            updateTextStats();
+        });
+
+        sampleBtn.addEventListener("click", () => {
+            textInput.value = "Welcome to Twelve Labs. Turn your words into natural speech, adjust the voice, and create audio in seconds.";
+            updateTextStats();
+            textInput.focus();
+        });
+
+        clearBtn.addEventListener("click", () => {
+            textInput.value = "";
+            updateTextStats();
+            textInput.focus();
         });
 
         // Voice select change
@@ -186,6 +198,23 @@
 
         // Retry button
         retryBtn.addEventListener("click", handleGenerate);
+
+        updateTextStats();
+    }
+
+    function updateTextStats() {
+        const text = textInput.value;
+        const len = text.length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const seconds = Math.ceil((words / 150) * 60);
+
+        charCounter.textContent = `${len.toLocaleString()} / 5,000`;
+        charCounter.className = "char-counter";
+        if (len > 4500) charCounter.classList.add("danger");
+        else if (len > 4000) charCounter.classList.add("warning");
+
+        wordCounter.textContent = `${words.toLocaleString()} ${words === 1 ? "word" : "words"}`;
+        durationEstimate.textContent = `About ${formatTime(seconds)}`;
     }
 
     // --- Generate Speech ---
